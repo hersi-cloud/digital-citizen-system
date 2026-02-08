@@ -15,5 +15,6 @@ class ApiConstants {
   // Isticmaal 10.0.2.2 Android Emulator-ka si aad u access-gareyso localhost
   // Isticmaal localhost haddii aad ku wado Web ama Desktop
   // Haddii aad isticmaalayso Mobile dhab ah, isticmaal IP address-ka mashiinkaaga
-  static const String baseUrl = 'http://localhost:5000/api'; 
+  // static const String baseUrl = 'http://localhost:5000/api';
+  static const String baseUrl = 'https://digital-citizen-system.onrender.com/api'; 
 }

@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        // Force IPv4 and add timeouts
-        const conn = await mongoose.connect(process.env.MONGO_URI.replace('localhost', '127.0.0.1'), {
-            serverSelectionTimeoutMS: 5000, // Fail after 5 seconds if no server
-             socketTimeoutMS: 45000,
+        const conn = await mongoose.connect(process.env.MONGO_URI, {
+            // Fix for Render/Atlas ENOTFOUND error
+            family: 4, 
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
