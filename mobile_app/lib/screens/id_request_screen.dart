@@ -31,6 +31,7 @@ class _IDRequestScreenState extends State<IDRequestScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isFaceDetected = false;
   bool _isScanning = false;
+  bool _isSubmitting = false;
 
   Future<void> _pickImage(ImageSource source) async {
     try {
@@ -134,6 +135,7 @@ class _IDRequestScreenState extends State<IDRequestScreen> {
   }
 
   Future<void> _submit() async {
+    if (_isSubmitting) return; // Prevent double clicks
     if (!_formKey.currentState!.validate()) return;
     if (_selectedGender == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -154,97 +156,109 @@ class _IDRequestScreenState extends State<IDRequestScreen> {
       return;
     }
 
-    // Use Provider to submit request
-    final provider = Provider.of<RegistrationProvider>(context, listen: false);
-    
-    // In a real app, you would upload the image to a storage bucket (AWS S3, Firebase Storage)
-    // and get a URL to send to the backend.
-    // For this prototype, we will just send the metadata.
-    
-    final success = await provider.createRequest('National ID', {
-      'fullName': _fullNameController.text,
-      'dob': _dobController.text,
-      'gender': _selectedGender,
-      'phone': _phoneController.text,
-      'placeOfBirth': _placeController.text,
+    setState(() {
+      _isSubmitting = true;
     });
 
-    if (success && mounted) {
-       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-       showDialog(
-         context: context, 
-         barrierDismissible: false,
-         builder: (ctx) => Dialog(
-           shape: RoundedRectangleBorder(
-             borderRadius: BorderRadius.circular(20),
-           ),
-           elevation: 16,
-           child: Container(
-             padding: const EdgeInsets.all(20),
-             decoration: BoxDecoration(
-               color: Colors.white,
-               borderRadius: BorderRadius.circular(20),
-             ),
-             child: Column(
-               mainAxisSize: MainAxisSize.min,
-               children: [
-                 const SizedBox(height: 10),
-                 Container(
-                   decoration: BoxDecoration(
-                     color: Colors.green.shade50,
-                     shape: BoxShape.circle,
-                   ),
-                   padding: const EdgeInsets.all(16),
-                   child: const Icon(Icons.check_circle, color: Colors.green, size: 60),
-                 ),
-                 const SizedBox(height: 20),
-                 const Text(
-                   'Success!',
-                   style: TextStyle(
-                     fontSize: 24, 
-                     fontWeight: FontWeight.bold,
-                     color: Colors.black87
-                   ),
-                 ),
-                 const SizedBox(height: 10),
-                 const Text(
-                   'Your National ID Request has been submitted successfully!',
-                   textAlign: TextAlign.center,
-                   style: TextStyle(fontSize: 16, color: Colors.grey),
-                 ),
-                 const SizedBox(height: 24),
-                 SizedBox(
-                   width: double.infinity,
-                   child: ElevatedButton(
-                     style: ElevatedButton.styleFrom(
-                       backgroundColor: AppColors.primaryBlue,
-                       shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(30),
-                       ),
-                       padding: const EdgeInsets.symmetric(vertical: 14),
-                     ),
-                     onPressed: () => Navigator.pop(ctx), 
-                     child: const Text('OK', style: TextStyle(fontSize: 16, color: Colors.white)),
-                   ),
-                 ),
-               ],
-             ),
-           ),
-         )
-       );
-       _formKey.currentState!.reset();
-       _dobController.clear();
-       setState(() {
-         _selectedGender = null;
-         _imageFile = null;
-         _isFaceDetected = false;
-       });
-    } else {
-       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text(provider.errorMessage ?? 'Request failed')),
-         );
-       }
+    try {
+      // Use Provider to submit request
+      final provider = Provider.of<RegistrationProvider>(context, listen: false);
+      
+      // In a real app, you would upload the image to a storage bucket (AWS S3, Firebase Storage)
+      // and get a URL to send to the backend.
+      // For this prototype, we will just send the metadata.
+      
+      final success = await provider.createRequest('National ID', {
+        'fullName': _fullNameController.text,
+        'dob': _dobController.text,
+        'gender': _selectedGender,
+        'phone': _phoneController.text,
+        'placeOfBirth': _placeController.text,
+      });
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        showDialog(
+          context: context, 
+          barrierDismissible: false,
+          builder: (ctx) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 16,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Success!',
+                    style: TextStyle(
+                      fontSize: 24, 
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Your National ID Request has been submitted successfully!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: () => Navigator.pop(ctx), 
+                      child: const Text('OK', style: TextStyle(fontSize: 16, color: Colors.white)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        );
+        _formKey.currentState!.reset();
+        _dobController.clear();
+        setState(() {
+          _selectedGender = null;
+          _imageFile = null;
+          _isFaceDetected = false;
+        });
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(provider.errorMessage ?? 'Request failed')),
+          );
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
@@ -362,8 +376,13 @@ class _IDRequestScreenState extends State<IDRequestScreen> {
                     backgroundColor: AppColors.primaryBlue, 
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: _submit,
-                  child: const Text('Submit Request', style: TextStyle(fontSize: 18, color: Colors.white)),
+                  onPressed: _isSubmitting ? null : _submit,
+                  child: _isSubmitting 
+                    ? const SizedBox(
+                        height: 20, width: 20, 
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                      )
+                    : const Text('Submit Request', style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
             ],
           ),
