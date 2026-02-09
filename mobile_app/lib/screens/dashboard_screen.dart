@@ -208,18 +208,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: 20),
           // NIRA Ad Banner
           // NIRA Ad Banner
-          Center(
+          // NIRA Ad Banner
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: InkWell(
               onTap: () {
                  Navigator.of(context).push(
                    MaterialPageRoute(builder: (_) => const NiraInfoScreen())
                  );
               },
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
               child: Container(
                 width: double.infinity, 
                 // Increased height/padding for better visibility
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [const Color(0xFF4189E0), Colors.blue.shade900], 
@@ -230,21 +232,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.blue.withOpacity(0.4),
-                      blurRadius: 15,
+                      blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                   ],
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center, // Center row content
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2), // Stylish semi-transparent
                         shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
                       ),
-                      child: const Icon(Icons.verified_user, color: Color(0xFF4189E0), size: 36),
+                      child: const Icon(Icons.verified_user_rounded, color: Colors.white, size: 40),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
@@ -256,27 +258,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 18, // Larger font
+                              fontSize: 20, // Much larger
+                              letterSpacing: 0.5,
                             ),
                           ),
-                          SizedBox(height: 6),
+                          SizedBox(height: 8),
                           Text(
-                            'Is-diiwaangeli oo qaado Kaarkaaga Aqoonsiga Qaran maanta.',
+                            'Is-diiwaangeli oo qaado Kaarkaaga Aqoonsiga Qaran.',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              height: 1.3,
+                              color: Colors.white70,
+                              fontSize: 14,
+                              height: 1.4,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 20),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 24),
                   ],
                 ),
               ),
             ),
           ),
+          const SizedBox(height: 30), // Bottom breathing room
         ],
       ),
     );
